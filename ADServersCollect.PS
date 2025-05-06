@@ -1,0 +1,31 @@
+$dir = "F:\Jobs\ADserversImport"
+
+
+
+    try
+    {
+       $Temp = Get-ADComputer -Filter {(OperatingSystem -like "Windows Server*" -or OperatingSystem -like "Windows 2000 Server*")-and 
+       (ServicePrincipalName -notlike "*cluster*" -or ServicePrincipalName -notlike "*MSSQLSVC*") } -property * | select DNShostName 
+       $($temp.DNShostName)| Out-File "$dir\Data_$(Get-Date -Format "dd_MM_yyyy_hhmmss").csv"
+
+       $all = Get-ChildItem -Path $dir -Filter *.csv
+       foreach($file in $all)
+       {
+   
+        # $Query="exec dbo.Wintel_ADServers_Import '"+$file.fullname + "'"
+        # Invoke-Sqlcmd -Query $Query -ServerInstance  "w2kproddb1.ctr.nestle.com,40028" -Database "WW_WintelServers" -QueryTimeout 1000
+        # Remove-Item $file.FullName -Force
+   
+        }  
+          
+     
+     }
+     catch
+     {
+
+     $ErrorMessage = $_.Exception.Message
+    "exception while moving, $ErrorMessage"| Out-File $log -Append
+
+     }
+    
+     
